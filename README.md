@@ -48,7 +48,6 @@ FE-main/
 ├── assets/               # 이미지, 아이콘 등 정적 파일
 ├── App.tsx               # 앱 진입점
 ├── index.js              # 앱 루트
-├── .env                  # 환경변수 설정
 └── README.md             # 프로젝트 설명 파일
 
 ```

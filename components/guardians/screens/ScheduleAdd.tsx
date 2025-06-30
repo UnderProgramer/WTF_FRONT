@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useState, useCallback, useEffect } from "react"
+import {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -14,29 +14,34 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-} from "react-native"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import DateTimePicker from "@react-native-community/datetimepicker"
-import { XMarkIcon, CalendarDaysIcon, PlusIcon, CheckIcon } from "react-native-heroicons/outline"
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  XMarkIcon,
+  CalendarDaysIcon,
+  PlusIcon,
+  CheckIcon,
+} from 'react-native-heroicons/outline';
 
-const API_BASE_URL = "https://capstone-be-oasis.onrender.com"
+const API_BASE_URL = 'https://capstone-be-oasis.onrender.com';
 
 export interface Medicine {
-  id: string
-  title: string
-  startDate: Date
-  endDate: Date
-  times: Date[]
+  id: string;
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  times: Date[];
 }
 
 interface AddScheduleModalProps {
-  visible: boolean
-  onClose: () => void
-  guardianId: string
-  takerIdx: number
-  authToken: string
-  refreshToken: string
-  onTokenUpdate: (accessToken: string, refreshToken: string) => void
+  visible: boolean;
+  onClose: () => void;
+  guardianId: string;
+  takerIdx: number;
+  authToken: string;
+  refreshToken: string;
+  onTokenUpdate: (accessToken: string, refreshToken: string) => void;
 }
 
 export default function AddScheduleModal({
@@ -48,62 +53,66 @@ export default function AddScheduleModal({
   onTokenUpdate,
   guardianId,
 }: AddScheduleModalProps) {
-  const [medicines, setMedicines] = useState<Medicine[]>([])
-  const [title, settitle] = useState<string>("")
-  const [startDate, setStartDate] = useState<Date>(new Date())
-  const [endDate, setEndDate] = useState<Date>(new Date())
-  const [times, setTimes] = useState<Date[]>([])
-  const [showPicker, setShowPicker] = useState<"start" | "end" | "time" | null>(null)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [debugInfo, setDebugInfo] = useState<string | null>(null)
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [title, settitle] = useState<string>('');
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [times, setTimes] = useState<Date[]>([]);
+  const [showPicker, setShowPicker] = useState<'start' | 'end' | 'time' | null>(
+    null,
+  );
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   // takerIdx 유효성 검사 및 디버깅
   useEffect(() => {
-    console.log("AddScheduleModal props:", {
+    console.log('AddScheduleModal props:', {
       takerIdx,
       guardianId,
-      authToken: authToken ? "present" : "missing",
-      refreshToken: refreshToken ? "present" : "missing",
-    })
+      authToken: authToken ? 'present' : 'missing',
+      refreshToken: refreshToken ? 'present' : 'missing',
+    });
 
     if (visible && (!takerIdx || takerIdx === 0)) {
-      Alert.alert("사용자 정보 오류", "takerIdx가 유효하지 않습니다. 사용자를 다시 선택해주세요.", [
-        { text: "확인", onPress: onClose },
-      ])
+      Alert.alert(
+        '사용자 정보 오류',
+        'takerIdx가 유효하지 않습니다. 사용자를 다시 선택해주세요.',
+        [{text: '확인', onPress: onClose}],
+      );
     }
-  }, [visible, takerIdx, guardianId, authToken, refreshToken, onClose])
+  }, [visible, takerIdx, guardianId, authToken, refreshToken, onClose]);
 
   useEffect(() => {
     if (visible) {
-      setMedicines([])
-      settitle("")
-      setStartDate(new Date())
-      setEndDate(new Date())
-      setTimes([])
-      setErrors({})
-      setDebugInfo(null)
+      setMedicines([]);
+      settitle('');
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setTimes([]);
+      setErrors({});
+      setDebugInfo(null);
     }
-  }, [visible, takerIdx])
+  }, [visible, takerIdx]);
 
   const validateForm = useCallback(() => {
-    const e: Record<string, string> = {}
+    const e: Record<string, string> = {};
     if (!title.trim()) {
-      e.title = "약 이름을 입력하세요"
+      e.title = '약 이름을 입력하세요';
     }
     if (startDate > endDate) {
-      e.range = "종료일이 시작일보다 늦어야 합니다"
+      e.range = '종료일이 시작일보다 늦어야 합니다';
     }
     if (times.length === 0) {
-      e.times = "알람 시간을 하나 이상 추가하세요"
+      e.times = '알람 시간을 하나 이상 추가하세요';
     }
-    setErrors(e)
-    return Object.keys(e).length === 0
-  }, [title, startDate, endDate, times])
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  }, [title, startDate, endDate, times]);
 
   const handleAddMedicine = useCallback(() => {
     if (!validateForm()) {
-      return
+      return;
     }
     const newMed: Medicine = {
       id: Date.now().toString(),
@@ -111,190 +120,229 @@ export default function AddScheduleModal({
       startDate,
       endDate,
       times,
-    }
-    setMedicines((prev) => [...prev, newMed])
-    settitle("")
-    setStartDate(new Date())
-    setEndDate(new Date())
-    setTimes([])
-    setErrors({})
-  }, [title, startDate, endDate, times, validateForm])
+    };
+    setMedicines(prev => [...prev, newMed]);
+    settitle('');
+    setStartDate(new Date());
+    setEndDate(new Date());
+    setTimes([]);
+    setErrors({});
+  }, [title, startDate, endDate, times, validateForm]);
 
   const handleDateChange = useCallback(
     (_: any, date?: Date) => {
       if (!date) {
-        setShowPicker(null)
-        return
+        setShowPicker(null);
+        return;
       }
-      if (showPicker === "start") {
-        setStartDate(date)
-      } else if (showPicker === "end") {
-        setEndDate(date)
-      } else if (showPicker === "time") {
-        setTimes((prev) => [...prev, date])
+      if (showPicker === 'start') {
+        setStartDate(date);
+      } else if (showPicker === 'end') {
+        setEndDate(date);
+      } else if (showPicker === 'time') {
+        setTimes(prev => [...prev, date]);
       }
-      setShowPicker(null)
-      setErrors({})
+      setShowPicker(null);
+      setErrors({});
     },
     [showPicker],
-  )
+  );
 
   const refreshAccessToken = useCallback(
     async (rToken: string) => {
       const res = await fetch(`${API_BASE_URL}/guardians/auth/renew`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${rToken}`,
         },
-      })
-      if (!res.ok) throw new Error(`Token refresh failed with status ${res.status}`)
-      const json = await res.json()
+      });
+      if (!res.ok)
+        throw new Error(`Token refresh failed with status ${res.status}`);
+      const json = await res.json();
       const newAccess = json.accessToken,
-        newRefresh = json.refreshToken
-      await AsyncStorage.setItem("accessToken", newAccess)
-      await AsyncStorage.setItem("refreshToken", newRefresh)
-      onTokenUpdate(newAccess, newRefresh)
-      return newAccess
+        newRefresh = json.refreshToken;
+      await AsyncStorage.setItem('accessToken', newAccess);
+      await AsyncStorage.setItem('refreshToken', newRefresh);
+      onTokenUpdate(newAccess, newRefresh);
+      return newAccess;
     },
     [onTokenUpdate],
-  )
+  );
 
   const makeAuthenticatedRequest = useCallback(
     async (url: string, options: RequestInit, token: string) => {
-      let response = await fetch(url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${token}` } })
+      let response = await fetch(url, {
+        ...options,
+        headers: {...options.headers, Authorization: `Bearer ${token}`},
+      });
       if (response.status === 401 && refreshToken) {
-        const newToken = await refreshAccessToken(refreshToken)
+        const newToken = await refreshAccessToken(refreshToken);
         response = await fetch(url, {
           ...options,
-          headers: { ...options.headers, Authorization: `Bearer ${newToken}` },
-        })
+          headers: {...options.headers, Authorization: `Bearer ${newToken}`},
+        });
       }
-      return response
+      return response;
     },
     [refreshToken, refreshAccessToken],
-  )
+  );
 
   // 날짜를 YYYY-MM-DD 형식으로 포맷하는 함수
   const formatDateToString = (date: Date): string => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   // 시간을 HH:MM 형식으로 포맷하는 함수
   const formatTimeToString = (date: Date): string => {
-    const hours = String(date.getHours()).padStart(2, "0")
-    const minutes = String(date.getMinutes()).padStart(2, "0")
-    return `${hours}:${minutes}`
-  }
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
   const handleSubmitSchedules = useCallback(async () => {
     // takerIdx 유효성 검사
     if (!takerIdx || takerIdx === 0) {
-      Alert.alert("오류", "takerIdx가 유효하지 않습니다. 사용자를 다시 선택해주세요.")
-      return
+      Alert.alert(
+        '오류',
+        'takerIdx가 유효하지 않습니다. 사용자를 다시 선택해주세요.',
+      );
+      return;
     }
 
     if (medicines.length === 0) {
-      Alert.alert("등록 필요", "최소 하나 이상의 약을 추가하세요.")
-      return
+      Alert.alert('등록 필요', '최소 하나 이상의 약을 추가하세요.');
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
-    const schedules = medicines.map((med) => {
-      const noticeTime = med.times.map((time) => formatTimeToString(time))
+    const schedules = medicines.map(med => {
+      const noticeTime = med.times.map(time => formatTimeToString(time));
       return {
         title: med.title,
         description: `${med.title} 복용 알림`,
         startTime: formatDateToString(med.startDate),
         endTime: formatDateToString(med.endDate),
         noticeTime,
-      }
-    })
+      };
+    });
 
     const requestBody = {
       takerIdx: Number(takerIdx),
       schedules,
-    }
+    };
 
     // 추가 디버깅 정보
-    console.log("Submitting with takerIdx:", takerIdx, "Type:", typeof takerIdx)
-    console.log("Request body:", JSON.stringify(requestBody, null, 2))
+    // console.log(
+    //   'Submitting with takerIdx:',
+    //   takerIdx,
+    //   'Type:',
+    //   typeof takerIdx,
+    // );
+    // console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
     try {
       // 요청 데이터 로깅
-      console.log("Request body:", JSON.stringify(requestBody, null, 2))
-      setDebugInfo(`Request body:\n${JSON.stringify(requestBody, null, 2)}`)
+      console.log('Request body:', JSON.stringify(requestBody, null, 2));
+      setDebugInfo(`Request body:\n${JSON.stringify(requestBody, null, 2)}`);
 
       const response = await makeAuthenticatedRequest(
         `${API_BASE_URL}/guardians/data/schedule`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify(requestBody),
         },
         authToken,
-      )
+      );
 
       // 서버 응답 텍스트 읽기
-      const text = await response.text()
-      console.log("Response text:", text)
+      const text = await response.text();
+      console.log('Response text:', text);
 
       // JSON으로 파싱 시도
-      let jsonResponse: any = null
+      let jsonResponse: any = null;
       try {
-        jsonResponse = JSON.parse(text)
+        jsonResponse = JSON.parse(text);
       } catch (parseError) {
-        console.log("Failed to parse response as JSON:", parseError)
+        console.log('Failed to parse response as JSON:', parseError);
       }
 
       // 디버그 정보 업데이트
       setDebugInfo(
         `Request body:\n${JSON.stringify(requestBody, null, 2)}\n\n` +
           `Status: ${response.status}\n\n` +
-          `Response headers:\n${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\n\n` +
+          `Response headers:\n${JSON.stringify(
+            Object.fromEntries(response.headers.entries()),
+            null,
+            2,
+          )}\n\n` +
           `Raw response:\n${text}` +
-          (jsonResponse ? `\n\nParsed response:\n${JSON.stringify(jsonResponse, null, 2)}` : ""),
-      )
+          (jsonResponse
+            ? `\n\nParsed response:\n${JSON.stringify(jsonResponse, null, 2)}`
+            : ''),
+      );
 
       if (!response.ok) {
-        const errorMessage = jsonResponse?.message || jsonResponse?.error || text || `HTTP ${response.status}`
-        Alert.alert("생성 실패", `서버 오류 (${response.status}):\n${errorMessage}`)
-        throw new Error(`Failed with status ${response.status}: ${errorMessage}`)
+        const errorMessage =
+          jsonResponse?.message ||
+          jsonResponse?.error ||
+          text ||
+          `HTTP ${response.status}`;
+        Alert.alert(
+          '생성 실패',
+          `서버 오류 (${response.status}):\n${errorMessage}`,
+        );
+        throw new Error(
+          `Failed with status ${response.status}: ${errorMessage}`,
+        );
       }
 
-      Alert.alert("완료", "일정이 생성되었습니다.", [{ text: "확인", onPress: onClose }])
+      Alert.alert('완료', '일정이 생성되었습니다.', [
+        {text: '확인', onPress: onClose},
+      ]);
     } catch (err: any) {
-      console.error("Schedule creation error:", err)
-      const errorInfo = `Exception:\n${err.message}\n\nStack:\n${err.stack}`
-      setDebugInfo((prev) => `${prev}\n\n${errorInfo}`)
-      Alert.alert("오류", err.message || "일정 생성에 실패했습니다.")
+      console.error('Schedule creation error:', err);
+      const errorInfo = `Exception:\n${err.message}\n\nStack:\n${err.stack}`;
+      setDebugInfo(prev => `${prev}\n\n${errorInfo}`);
+      Alert.alert('오류', err.message || '일정 생성에 실패했습니다.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }, [medicines, authToken, takerIdx, onClose, makeAuthenticatedRequest])
+  }, [medicines, authToken, takerIdx, onClose, makeAuthenticatedRequest]);
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}>
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoid}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoid}>
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <XMarkIcon size={24} color="#6B7280" />
             </TouchableOpacity>
             <View style={styles.header}>
               <Text style={styles.headerTitle}>약 등록</Text>
-              <Text style={styles.headerTitle}>사용자 ID: {takerIdx || "미설정"}</Text>
+              <Text style={styles.headerTitle}>
+                사용자 ID: {takerIdx || '미설정'}
+              </Text>
             </View>
-            <View style={{ width: 24 }} />
+            <View style={{width: 24}} />
           </View>
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={styles.content}
+            showsVerticalScrollIndicator={false}>
             {/* 약 이름 */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>약 이름 *</Text>
@@ -305,7 +353,9 @@ export default function AddScheduleModal({
                 placeholder="약 이름을 입력하세요"
                 placeholderTextColor="#9CA3AF"
               />
-              {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+              {errors.title && (
+                <Text style={styles.errorText}>{errors.title}</Text>
+              )}
             </View>
             {/* 복용 기간 */}
             <View style={styles.inputGroup}>
@@ -313,9 +363,10 @@ export default function AddScheduleModal({
               <View style={styles.dateRow}>
                 <TouchableOpacity
                   style={[styles.dateButton, errors.range && styles.inputError]}
-                  onPress={() => setShowPicker("start")}
-                >
-                  <Text style={styles.dateButtonText}>{startDate.toLocaleDateString()}</Text>
+                  onPress={() => setShowPicker('start')}>
+                  <Text style={styles.dateButtonText}>
+                    {startDate.toLocaleDateString()}
+                  </Text>
                   <View style={styles.iconWrapper}>
                     <CalendarDaysIcon size={18} color="#6366F1" />
                   </View>
@@ -323,29 +374,41 @@ export default function AddScheduleModal({
                 <Text style={styles.dateSeparatorText}>~</Text>
                 <TouchableOpacity
                   style={[styles.dateButton, errors.range && styles.inputError]}
-                  onPress={() => setShowPicker("end")}
-                >
-                  <Text style={styles.dateButtonText}>{endDate.toLocaleDateString()}</Text>
+                  onPress={() => setShowPicker('end')}>
+                  <Text style={styles.dateButtonText}>
+                    {endDate.toLocaleDateString()}
+                  </Text>
                   <View style={styles.iconWrapper}>
                     <CalendarDaysIcon size={18} color="#6366F1" />
                   </View>
                 </TouchableOpacity>
               </View>
-              {errors.range && <Text style={styles.errorText}>{errors.range}</Text>}
+              {errors.range && (
+                <Text style={styles.errorText}>{errors.range}</Text>
+              )}
             </View>
             {/* 알람 시간 */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>알람 시간 *</Text>
-              <TouchableOpacity style={styles.timeAddButton} onPress={() => setShowPicker("time")}>
+              <TouchableOpacity
+                style={styles.timeAddButton}
+                onPress={() => setShowPicker('time')}>
                 <PlusIcon size={16} color="#6366F1" />
                 <Text style={styles.timeAddButtonText}>시간 추가</Text>
               </TouchableOpacity>
-              {errors.times && <Text style={styles.errorText}>{errors.times}</Text>}
+              {errors.times && (
+                <Text style={styles.errorText}>{errors.times}</Text>
+              )}
               <View style={styles.timeListRow}>
                 {times.map((t, i) => (
                   <View key={i} style={styles.timeBadge}>
-                    <Text style={styles.timeBadgeText}>{formatTimeToString(t)}</Text>
-                    <TouchableOpacity onPress={() => setTimes((prev) => prev.filter((_, idx) => idx !== i))}>
+                    <Text style={styles.timeBadgeText}>
+                      {formatTimeToString(t)}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setTimes(prev => prev.filter((_, idx) => idx !== i))
+                      }>
                       <XMarkIcon size={14} color="#EF4444" />
                     </TouchableOpacity>
                   </View>
@@ -353,7 +416,9 @@ export default function AddScheduleModal({
               </View>
             </View>
             {/* 약 추가 버튼 */}
-            <TouchableOpacity style={styles.addMedicineButton} onPress={handleAddMedicine}>
+            <TouchableOpacity
+              style={styles.addMedicineButton}
+              onPress={handleAddMedicine}>
               <PlusIcon size={18} color="#fff" />
               <Text style={styles.addMedicineButtonText}>약 추가</Text>
             </TouchableOpacity>
@@ -364,18 +429,23 @@ export default function AddScheduleModal({
                   <Text style={styles.listTitle}>등록된 약물</Text>
                   <Text style={styles.countText}>{medicines.length}</Text>
                 </View>
-                {medicines.map((med) => (
+                {medicines.map(med => (
                   <View key={med.id} style={styles.listItem}>
                     <View style={styles.medicineInfo}>
                       <Text style={styles.medicineTitle}>{med.title}</Text>
                       <Text style={styles.medicineDetail}>
-                        {formatDateToString(med.startDate)} ~ {formatDateToString(med.endDate)}
+                        {formatDateToString(med.startDate)} ~{' '}
+                        {formatDateToString(med.endDate)}
                       </Text>
                       <Text style={styles.medicineDetail}>
-                        알림: {med.times.map((t) => formatTimeToString(t)).join(", ")}
+                        알림:{' '}
+                        {med.times.map(t => formatTimeToString(t)).join(', ')}
                       </Text>
                     </View>
-                    <TouchableOpacity onPress={() => setMedicines((prev) => prev.filter((x) => x.id !== med.id))}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setMedicines(prev => prev.filter(x => x.id !== med.id))
+                      }>
                       <XMarkIcon size={18} color="#EF4444" />
                     </TouchableOpacity>
                   </View>
@@ -392,10 +462,13 @@ export default function AddScheduleModal({
           {/* 제출 버튼 */}
           <View style={styles.footer}>
             <TouchableOpacity
-              style={[styles.submitButton, (medicines.length === 0 || isSubmitting) && styles.disabledButton]}
+              style={[
+                styles.submitButton,
+                (medicines.length === 0 || isSubmitting) &&
+                  styles.disabledButton,
+              ]}
               onPress={handleSubmitSchedules}
-              disabled={medicines.length === 0 || isSubmitting}
-            >
+              disabled={medicines.length === 0 || isSubmitting}>
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
@@ -408,17 +481,23 @@ export default function AddScheduleModal({
           </View>
           {showPicker && (
             <DateTimePicker
-              value={showPicker === "time" ? new Date() : showPicker === "start" ? startDate : endDate}
-              mode={showPicker === "time" ? "time" : "date"}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
+              value={
+                showPicker === 'time'
+                  ? new Date()
+                  : showPicker === 'start'
+                  ? startDate
+                  : endDate
+              }
+              mode={showPicker === 'time' ? 'time' : 'date'}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleDateChange}
-              minimumDate={showPicker === "end" ? startDate : undefined}
+              minimumDate={showPicker === 'end' ? startDate : undefined}
             />
           )}
         </KeyboardAvoidingView>
       </SafeAreaView>
     </Modal>
-  )
+  );
 }
 const styles = StyleSheet.create({
   container: {
@@ -438,7 +517,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 2,
@@ -497,7 +576,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -571,7 +650,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 8,
     shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
@@ -593,7 +672,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
@@ -660,12 +739,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#10B981',
+    backgroundColor: '#4A90E2',
     paddingVertical: 18,
     paddingHorizontal: 24,
     borderRadius: 12,
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#4A90E2',
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
@@ -680,14 +759,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#D1D5DB',
     shadowOpacity: 0,
   },
-  debugContainer: { maxHeight: 120, margin: 8, padding: 8, backgroundColor: '#feeceb', borderRadius: 8 },
-  debugText: { color: '#c00', fontSize: 12, lineHeight: 18 },
+  debugContainer: {
+    maxHeight: 120,
+    margin: 8,
+    padding: 8,
+    backgroundColor: '#feeceb',
+    borderRadius: 8,
+  },
+  debugText: {color: '#c00', fontSize: 12, lineHeight: 18},
   medicineInfo: {
     flex: 1,
   },
   medicineDetail: {
     fontSize: 14,
-    color: "#6B7280",
+    color: '#6B7280',
     marginTop: 2,
   },
 });

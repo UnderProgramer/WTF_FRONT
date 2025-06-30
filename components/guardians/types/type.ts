@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Main: {screen: 'Schedule' | 'GuardiansHome' | 'MyPage'};
   AddPatient: undefined;
   MeLogin: undefined;
+  List: undefined;
 };
 export interface Patient {
   takerIdx?: string;

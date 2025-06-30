@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {Alert, LogBox} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Alert, LogBox, PermissionsAndroid, Platform} from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,20 +8,58 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import OnboardingScreen from './app/page';
 import MainScreenLayout from './components/guardians/screens/main-screen-layout';
 import type {RootStackParamList} from './components/guardians/types/type';
-// import DebugFCMToken from './DebugFCMToken';
+import List from './components/onboarding/List';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
+  const [permissionRequested, setPermissionRequested] = useState(false);
+
   useEffect(() => {
-    const requestPermission = async (): Promise<boolean> => {
+    const requestNotificationPermission = async (): Promise<boolean> => {
       try {
-        const authStatus = await messaging().requestPermission();
-        return (
+        if (Platform.OS === 'android' && Platform.Version >= 33) {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+            {
+              title: '알림 권한 필요',
+              message: '중요한 알림을 받기 위해 알림 권한이 필요합니다.',
+              buttonNeutral: '나중에',
+              buttonNegative: '거절',
+              buttonPositive: '허용',
+            },
+          );
+
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Android 알림 권한이 거부되었습니다.');
+            return false;
+          }
+        }
+        const authStatus = await messaging().requestPermission({
+          sound: true,
+          announcement: true,
+          badge: true,
+          alert: true,
+        });
+
+        const enabled =
           authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-          authStatus === messaging.AuthorizationStatus.PROVISIONAL
-        );
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (!enabled) {
+          Alert.alert(
+            '알림 권한 필요',
+            '앱의 중요한 기능을 사용하려면 알림 권한이 필요합니다. 설정에서 직접 허용해주세요.',
+            [{text: '확인', style: 'default'}],
+          );
+          return false;
+        }
+
+        return true;
       } catch (err) {
-        console.error('권한 요청 실패:', err);
+        console.error('알림 권한 요청 실패:', err);
+        Alert.alert('오류', '알림 권한 요청 중 오류가 발생했습니다.', [
+          {text: '확인', style: 'default'},
+        ]);
         return false;
       }
     };
@@ -36,29 +74,19 @@ const App = () => {
         }
         return null;
       } catch (err) {
-        console.error('FCM 토큰 에러:', err);
+        console.log('FCM 토큰 에러:', err);
         return null;
       }
     };
 
     const sendTokenToBackend = async () => {
-      const granted = await requestPermission();
-      if (!granted) {
-        Alert.alert(
-          '알림 권한 필요',
-          '푸시 알림을 받으려면 권한을 허용해주세요.',
-        );
-        return;
-      }
       const fcmToken = await getFCMToken();
       if (!fcmToken) {
+        console.log('FCM 토큰을 가져올 수 없습니다.');
         return;
       }
+
       try {
-        // const currentDevice = await AsyncStorage.getItem('deviceId');
-        // if (currentDevice) {
-        //   return;
-        // }
         const res = await axios.post(
           'https://capstone-be-oasis.onrender.com/takers/auth/init',
           {
@@ -68,6 +96,7 @@ const App = () => {
         await AsyncStorage.setItem('fcmToken', fcmToken);
         const deviceId = res.data?.data?.deviceId;
         await AsyncStorage.setItem('deviceId', deviceId);
+        console.log('백엔드에 토큰 전송 완료');
       } catch (error) {
         if (axios.isAxiosError(error)) {
           console.log('deviceId 전송 실패:', error.response?.data || error);
@@ -77,15 +106,29 @@ const App = () => {
       }
     };
 
+    const initializeNotifications = async () => {
+      if (permissionRequested) return;
+
+      setPermissionRequested(true);
+
+      setTimeout(async () => {
+        const permissionGranted = await requestNotificationPermission();
+
+        if (permissionGranted) {
+          await sendTokenToBackend();
+        }
+      }, 1000);
+    };
+
     const unsubscribeMessage = messaging().onMessage(async remoteMessage => {
       if (remoteMessage.notification) {
         Alert.alert(
           remoteMessage.notification.title || '알림',
-          remoteMessage.notification.body ||
-            'helloworldTesttestetesttsetstse!!!!!!',
+          remoteMessage.notification.body || '새로운 알림이 도착했습니다.',
         );
       }
     });
+
     const unsubscribeTokenRefresh = messaging().onTokenRefresh(async token => {
       console.log('FCM 토큰 갱신:', token);
       try {
@@ -102,18 +145,18 @@ const App = () => {
           await AsyncStorage.setItem('deviceId', deviceId);
         }
       } catch (e) {
-        console.error('토큰 갱신 전송 실패:', e);
+        console.log('토큰 갱신 전송 실패:', e);
       }
     });
 
-    sendTokenToBackend();
-
+    initializeNotifications();
     LogBox.ignoreLogs(['Remote debugger']);
+
     return () => {
       unsubscribeMessage();
       unsubscribeTokenRefresh();
     };
-  }, []);
+  }, [permissionRequested]);
 
   return (
     <>
@@ -123,66 +166,11 @@ const App = () => {
           screenOptions={{headerShown: false}}>
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="Main" component={MainScreenLayout} />
+          <Stack.Screen name="List" component={List} />
         </Stack.Navigator>
       </NavigationContainer>
-      {/* <DebugFCMToken /> */}
     </>
   );
 };
 
 export default App;
-
-// export default App;
-
-// import React, { useEffect, useState } from 'react';
-// import { SafeAreaView, Text, ScrollView, StyleSheet } from 'react-native';
-// import messaging from '@react-native-firebase/messaging';
-
-// const App = () => {
-//   const [fcmToken, setFcmToken] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     const fetchToken = async () => {
-//       try {
-//         const permission = await messaging().requestPermission();
-//         const enabled =
-//           permission === messaging.AuthorizationStatus.AUTHORIZED ||
-//           permission === messaging.AuthorizationStatus.PROVISIONAL;
-
-//         if (!enabled) {
-//           setFcmToken('❌ 푸시 권한이 거부되었습니다.');
-//           return;
-//         }
-
-//         const token = await messaging().getToken();
-//         console.log('📱 FCM Token:', token);
-//         setFcmToken(token || '❌ 토큰 없음');
-//       } catch (e) {
-//         console.error('🔥 FCM 토큰 가져오기 실패:', e);
-//         setFcmToken('❌ 오류 발생: ' + (e instanceof Error ? e.message : '알 수 없는 오류'));
-//       }
-//     };
-
-//     fetchToken();
-//   }, []);
-
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       <ScrollView contentContainerStyle={styles.scroll}>
-//         <Text style={styles.title}>🔥 FCM 토큰</Text>
-//         <Text selectable style={styles.token}>
-//           {fcmToken ?? '토큰 로딩 중...'}
-//         </Text>
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: '#fff' },
-//   scroll: { flexGrow: 1, padding: 20, justifyContent: 'center' },
-//   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-//   token: { fontSize: 12, color: '#333', textAlign: 'center' },
-// });
-
-// export default App;

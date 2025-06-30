@@ -1,19 +1,25 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native';
+import {StyleSheet, Dimensions, Platform} from 'react-native';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 const isTablet = width >= 768;
 const isSmallPhone = width < 350;
 
-const responsiveWidth = (percentage: number): number => (width * percentage) / 100;
-const responsiveHeight = (percentage: number): number => (height * percentage) / 100;
+const responsiveWidth = (percentage: number): number =>
+  (width * percentage) / 100;
+const responsiveHeight = (percentage: number): number =>
+  (height * percentage) / 100;
 interface ResponsiveFontSizeParams {
   size: number;
 }
 
 const responsiveFontSize = (size: ResponsiveFontSizeParams['size']): number => {
-  if (isSmallPhone){ return size * 0.85;}
-  if (isTablet) {return size * 1.2;}
+  if (isSmallPhone) {
+    return size * 0.85;
+  }
+  if (isTablet) {
+    return size * 1.2;
+  }
   return size;
 };
 
@@ -149,7 +155,7 @@ export const styles = StyleSheet.create({
     marginLeft: responsiveWidth(2),
   },
   roleContainer: {
-    flexDirection: isTablet ? 'row' : (width < 350 ? 'column' : 'row'),
+    flexDirection: isTablet ? 'row' : width < 350 ? 'column' : 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     marginTop: responsiveHeight(4),
@@ -164,21 +170,21 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    minWidth: isTablet ? 120 : (isSmallPhone ? 80 : 90),
+    minWidth: isTablet ? 120 : isSmallPhone ? 80 : 90,
     marginVertical: isSmallPhone ? 8 : 0,
     marginHorizontal: 4,
   },
   icon: {
-    width: isTablet ? 110 : (isSmallPhone ? 70 : 90),
-    height: isTablet ? 140 : (isSmallPhone ? 90 : 118),
+    width: isTablet ? 110 : isSmallPhone ? 70 : 90,
+    height: isTablet ? 140 : isSmallPhone ? 90 : 118,
     marginBottom: responsiveHeight(2),
   },
   iconPlaceholder: {
-    width: isTablet ? 110 : (isSmallPhone ? 70 : 90),
-    height: isTablet ? 140 : (isSmallPhone ? 90 : 118),
+    width: isTablet ? 110 : isSmallPhone ? 70 : 90,
+    height: isTablet ? 140 : isSmallPhone ? 90 : 118,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -226,7 +232,7 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
@@ -306,7 +312,7 @@ export const styles = StyleSheet.create({
     maxWidth: isTablet ? 500 : 400,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -326,14 +332,14 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalButton: {
-    height: isTablet ? 180 : (isSmallPhone ? 140 : 160),
+    height: isTablet ? 180 : isSmallPhone ? 140 : 160,
     backgroundColor: '#F8F8F8',
     borderRadius: 15,
     padding: responsiveWidth(5),
     marginVertical: responsiveHeight(1.2),
-    width: isTablet ? 220 : (isSmallPhone ? 160 : 200),
+    width: isTablet ? 220 : isSmallPhone ? 160 : 200,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 1,
@@ -394,7 +400,7 @@ export const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 50,
+    height: 70,
     fontSize: responsiveFontSize(16),
     color: '#333',
     paddingVertical: Platform.OS === 'ios' ? 15 : 10,
@@ -455,7 +461,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: responsiveWidth(2.5),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 1,
@@ -535,8 +541,8 @@ export const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   iconImage: {
-    width: isTablet ? 100 : (isSmallPhone ? 60 : 80),
-    height: isTablet ? 100 : (isSmallPhone ? 60 : 80),
+    width: isTablet ? 100 : isSmallPhone ? 60 : 80,
+    height: isTablet ? 100 : isSmallPhone ? 60 : 80,
     resizeMode: 'contain',
   },
   formContainer1: {
@@ -547,6 +553,6 @@ export const styles = StyleSheet.create({
     fontSize: responsiveFontSize(isTablet ? 32 : 28),
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'rgb(76, 175, 140)',
+    color: '#667eea',
   },
 });

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "515210467270",
+    "project_id": "oasis-71a04",
+    "storage_bucket": "oasis-71a04.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515210467270:android:91b8059eebd50c755944c7",
+        "android_client_info": {
+          "package_name": "com.test1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVYm3z7q_nbrLxmTN3mB-f_m05T_JuSqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

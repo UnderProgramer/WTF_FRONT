@@ -1,0 +1,33 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods.rb'
+
+platform :ios, '16.0'
+
+install! 'cocoapods', :deterministic_uuids => false
+
+use_modular_headers!  # <-- 이 줄 추가 (전체 적용)
+
+target 'test1' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => true
+  )
+
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath]
+    )
+
+    # Optional: Swift version 설정
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '5.0'
+      end
+    end
+  end
+end

@@ -1,0 +1,155 @@
+import { StyleSheet } from "react-native"
+export const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: "#f8f9fa",
+    },
+    header: {
+      backgroundColor: "#fff",
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: "#eee",
+    },
+    logoContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    logoCircle: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: "#7e22ce",
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 8,
+    },
+    logoText: {
+      color: "#fff",
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    logoTitle: {
+      fontSize: 20,
+      fontWeight: "bold",
+      color: "#7e22ce",
+    },
+    scrollView: {
+      flex: 1,
+      padding: 16,
+    },
+    greeting: {
+      fontSize: 18,
+      fontWeight: "600",
+      marginBottom: 20,
+      color: "#333",
+    },
+    patientCard: {
+      backgroundColor: "#fff",
+      borderRadius: 12,
+      marginBottom: 16,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: "#eee",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
+    },
+    patientHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 16,
+    },
+    patientInfo: {
+      flex: 1,
+    },
+    patientName: {
+      fontSize: 17,
+      fontWeight: "600",
+      color: "#333",
+    },
+    expandButton: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    expandText: {
+      fontSize: 14,
+      color: "#555",
+      marginRight: 4,
+    },
+    medicationList: {
+      paddingHorizontal: 16,
+      paddingBottom: 16,
+      borderTopWidth: 1,
+      borderTopColor: "#f0f0f0",
+      paddingTop: 8,
+    },
+    medicationItem: {
+      paddingVertical: 8,
+    },
+    medicationText: {
+      fontSize: 16,
+      color: "#333",
+      lineHeight: 24,
+    },
+    addPatientButton: {
+      backgroundColor: "#7e22ce",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 14,
+      borderRadius: 8,
+      marginBottom: 16,
+    },
+    addPatientText: {
+      color: "#fff",
+      fontSize: 16,
+      fontWeight: "600",
+      marginLeft: 8,
+    },
+    statsCard: {
+      backgroundColor: "#fff",
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 80,
+      borderWidth: 1,
+      borderColor: "#eee",
+    },
+    statsText: {
+      fontSize: 16,
+      color: "#333",
+    },
+    bottomNav: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: "#fff",
+      flexDirection: "row",
+      borderTopWidth: 1,
+      borderTopColor: "#eee",
+      height: 64,
+    },
+    navButton: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    activeNavButton: {
+      borderTopWidth: 2,
+      borderTopColor: "#7e22ce",
+    },
+    navText: {
+      fontSize: 12,
+      marginTop: 4,
+      color: "#555",
+    },
+    activeNavText: {
+      color: "#7e22ce",
+      fontWeight: "500",
+    },
+  })
+  

@@ -77,7 +77,7 @@ export default function AddPatientModal({
       const created = await res.json();
       console.log('API Response:', created);
 
-      Alert.alert('등록 완료', `복용자 등록이 완료되었습니다.`);
+      Alert.alert('등록 완료', '복용자 등록이 완료되었습니다.');
       await onSubmit({
         takerName: takerName.trim(),
       });

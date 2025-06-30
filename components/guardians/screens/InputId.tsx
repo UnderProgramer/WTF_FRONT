@@ -43,7 +43,7 @@ export default function TakerConnectModal({
 }: TakerConnectModalProps) {
   const [deviceId, setDeviceId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingDeviceId, setIsLoadingDeviceId] = useState(true);
+  const [_isLoadingDeviceId, setIsLoadingDeviceId] = useState(true);
   const [aleadyConn, setAleadyConn] = useState(false);
   //dviceId 가져오기
   // const getDeviceId = async () => {
@@ -121,9 +121,10 @@ export default function TakerConnectModal({
       );
 
       if (!connRes.ok) {
-        throw new Error(
-          `연결 실패 ${await connRes.text()}\nauth : ${token}\ntakeridx: ${takerIdx}\ndeviceId: ${deviceId}`,
+        console.log(
+          `연결 실패 ${await connRes.statusText}\nauth : ${token}\ntakeridx: ${takerIdx}\ndeviceId: ${deviceId}`,
         );
+        throw new Error('연결 실패');
       }
       console.log('연결 성공:', await connRes.text());
 
@@ -145,7 +146,7 @@ export default function TakerConnectModal({
     } finally {
       setIsSubmitting(false);
     }
-  }, [takerIdx, deviceId, token, onSuccess, takerName, reset]);
+  }, [takerIdx, deviceId, token, onSuccess, takerName, reset, aleadyConn]);
 
   const renderHeader = () => (
     <View style={styles.header}>

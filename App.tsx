@@ -55,6 +55,10 @@ const App = () => {
         return;
       }
       try {
+        // const currentDevice = await AsyncStorage.getItem('deviceId');
+        // if (currentDevice) {
+        //   return;
+        // }
         const res = await axios.post(
           'https://capstone-be-oasis.onrender.com/takers/auth/init',
           {
@@ -63,15 +67,12 @@ const App = () => {
         );
         await AsyncStorage.setItem('fcmToken', fcmToken);
         const deviceId = res.data?.data?.deviceId;
-        if (deviceId) {
-          console.log('서버로부터 받은 deviceId:', deviceId);
-          await AsyncStorage.setItem('deviceId', deviceId);
-        }
+        await AsyncStorage.setItem('deviceId', deviceId);
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          console.error('FCM 토큰 전송 실패:', error.response?.data || error);
+          console.log('deviceId 전송 실패:', error.response?.data || error);
         } else {
-          console.error('FCM 토큰 전송 실패:', error);
+          console.log('deviceId 전송 실패:', error);
         }
       }
     };
@@ -80,38 +81,37 @@ const App = () => {
       if (remoteMessage.notification) {
         Alert.alert(
           remoteMessage.notification.title || '알림',
-          remoteMessage.notification.body || '',
+          remoteMessage.notification.body ||
+            'helloworldTesttestetesttsetstse!!!!!!',
         );
       }
     });
-
-    // const unsubscribeTokenRefresh = messaging().onTokenRefresh(async token => {
-    //   console.log('FCM 토큰 갱신:', token);
-    //   try {
-    //     const res = await axios.post(
-    //       'https://capstone-be-oasis.onrender.com/takers/auth/init',
-    //       {
-    //         FCMToken: token,
-    //         timestamp: new Date().toISOString(),
-    //       },
-    //     );
-    //     await AsyncStorage.setItem('fcmToken', token);
-    //     const deviceId = res.data?.data?.deviceId;
-    //     if (deviceId) {
-    //       await AsyncStorage.setItem('deviceId', deviceId);
-    //     }
-    //   } catch (e) {
-    //     console.error('토큰 갱신 전송 실패:', e);
-    //   }
-    // });
+    const unsubscribeTokenRefresh = messaging().onTokenRefresh(async token => {
+      console.log('FCM 토큰 갱신:', token);
+      try {
+        const res = await axios.post(
+          'https://capstone-be-oasis.onrender.com/takers/auth/init',
+          {
+            FCMToken: token,
+            timestamp: new Date().toISOString(),
+          },
+        );
+        await AsyncStorage.setItem('fcmToken', token);
+        const deviceId = res.data?.data?.deviceId;
+        if (deviceId) {
+          await AsyncStorage.setItem('deviceId', deviceId);
+        }
+      } catch (e) {
+        console.error('토큰 갱신 전송 실패:', e);
+      }
+    });
 
     sendTokenToBackend();
 
     LogBox.ignoreLogs(['Remote debugger']);
-
     return () => {
       unsubscribeMessage();
-      // unsubscribeTokenRefresh();
+      unsubscribeTokenRefresh();
     };
   }, []);
 

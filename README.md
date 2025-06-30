@@ -32,7 +32,7 @@
 
 - `@react-native-firebase/app`, `@react-native-firebase/messaging`
 - `@react-navigation/native`, `native-stack`, `bottom-tabs`
-- `react-native-device-info`, `react-native-image-picker`, `react-native-qrcode-scanner`, `react-native-svg`
+- `react-native-device-info`, `react-native-svg`
 - `react-native-modal-datetime-picker`, `react-native-mask-text`, `react-native-vector-icons`
 
 ---

@@ -68,7 +68,11 @@ const App = () => {
           await AsyncStorage.setItem('deviceId', deviceId);
         }
       } catch (error) {
-        console.error('FCM 토큰 전송 실패:', error);
+        if (axios.isAxiosError(error)) {
+          console.error('FCM 토큰 전송 실패:', error.response?.data || error);
+        } else {
+          console.error('FCM 토큰 전송 실패:', error);
+        }
       }
     };
 
